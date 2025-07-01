@@ -92,24 +92,27 @@ async def 역할지급(ctx, member: discord.Member, gender: str, birth_year: str
     valid_genders = ["여자", "남자"]
 
     # 생년 숫자로 변환
-    try:
-        birth_year = int(birth_year)
-        if birth_year >= 100:
-            birth_year = birth_year % 100  # 2000년대생 처리
-    except ValueError:
-        await ctx.send("❗생년은 숫자(예: 08, 06)로 입력해주세요.")
-        return
+try:
+    birth_year = int(birth_year)
+    if birth_year >= 100:
+        birth_year = birth_year % 100  # 2000년대생 처리
+    birth_year_full = 2000 + birth_year if birth_year < 100 else birth_year
+except ValueError:
+    await ctx.send("❗생년은 숫자(예: 08, 06)로 입력해주세요.")
+    return
 
-    # 성별 체크
-    if gender not in valid_genders:
-        await ctx.send("❗성별은 `남자` 또는 `여자`로 입력해주세요.")
-        return
+# 현재 연도에서 생년 빼기 → 나이 계산
+current_year = datetime.now().year
+age = current_year - birth_year_full
 
-    # 나이 그룹 분류
-    if birth_year <= 7:
-        age_group = "10대"
-    else:
-        age_group = "20대"
+# 나이 기반 그룹 지정
+if 10 <= age <= 19:
+    age_group = "10대"
+elif 20 <= age <= 29:
+    age_group = "20대"
+else:
+    await ctx.send(f"⚠️ `{age}세`는 10대/20대 범위가 아니에요.")
+    return
 
     gender_role = ctx.guild.get_role(ROLE_IDS.get(gender))
     age_role = ctx.guild.get_role(ROLE_IDS.get(age_group))
