@@ -131,18 +131,21 @@ async def 역할지급(ctx, member: discord.Member, gender: str, birth_year_inpu
         await ctx.send(f"✅ {member.mention}님에게 `{role_names}` 역할이 지급되었어요!")
 
         # 로그 채널 전송
-        log_channel = bot.get_channel(LOG_CHANNEL_ID)
-        if log_channel:
-            await log_channel.send(
-                f"📌 **역할지급 기록**\n"
-                f"👤 대상: {member.mention}\n"
-                f"⚧ 성별: `{gender}`\n"
-                f"📅 생년: `{birth_year_full}년생` → `{age_group}`\n"
-                f"🛤 경로: `{path}`\n"
-                f"🎖 부여된 역할: `{role_names}`\n"
-                f"🕒 처리자: {ctx.author.mention}"
-            )
 
+log_channel = bot.get_channel(LOG_CHANNEL_ID)
+if log_channel:
+    embed = discord.Embed(
+        title="🎉 역할지급 기록",
+        description=f"역할이 정상적으로 지급되었습니다!",
+        color=87CEFA  # 초록색, 원하는 색으로 변경 가능
+    )
+    embed.add_field(name=" <:4_:1381626699887808532> 대상", value=member.mention, inline=False)
+    embed.add_field(name=" <:4_:1381626699887808532> 성별", value=gender, inline=True)
+    embed.add_field(name=" <:4_:1381626699887808532> 생년", value=f"{birth_year_full}년생 → {age_group}", inline=True)
+    embed.add_field(name=" <:4_:1381626699887808532> 경로", value=path, inline=False)
+    embed.set_footer(text=f"<:4_:1381626699887808532> 처리자: {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+    
+    await log_channel.send(embed=embed)
     except discord.Forbidden:
         await ctx.send("🚫 역할을 부여할 권한이 없어요.")
     except discord.HTTPException as e:
