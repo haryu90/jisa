@@ -137,7 +137,7 @@ if log_channel:
     embed = discord.Embed(
         title="🎉 역할지급 기록",
         description=f"역할이 정상적으로 지급되었습니다!",
-        color=87CEFA  # 초록색, 원하는 색으로 변경 가능
+        color=0x87CEFA  # 초록색, 원하는 색으로 변경 가능
     )
     embed.add_field(name=" <:4_:1381626699887808532> 대상", value=member.mention, inline=False)
     embed.add_field(name=" <:4_:1381626699887808532> 성별", value=gender, inline=True)
