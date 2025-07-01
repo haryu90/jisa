@@ -133,15 +133,14 @@ async def 역할지급(ctx, member: discord.Member, gender: str, birth_year_inpu
         log_channel = bot.get_channel(LOG_CHANNEL_ID)
         if log_channel:
             embed = discord.Embed(
-                title="🎉 역할지급 기록",
+                title=" 역할지급 기록",
                 description="역할이 정상적으로 지급되었습니다!",
                 color=0x87CEFA
             )
             embed.add_field(name="<:4_:1381626699887808532> 대상", value=member.mention, inline=False)
             embed.add_field(name="<:4_:1381626699887808532> 성별", value=gender, inline=True)
-            embed.add_field(name="<:4_:1381626699887808532> 생년", value=f"{birth_year_full}년생 → {age_group}", inline=True)
+            embed.add_field(name="<:4_:1381626699887808532> 생년", value=f"{birth_year_full}년생", inline=True)
             embed.add_field(name="<:4_:1381626699887808532> 경로", value=path, inline=False)
-            embed.add_field(name="<:4_:1381626699887808532> 부여된 역할", value=role_names, inline=False)
             embed.set_footer(text=f"처리자: {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
 
             await log_channel.send(embed=embed)
