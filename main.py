@@ -89,40 +89,40 @@ LOG_CHANNEL_ID = 1381621262874574884  # 로그 채널 ID로 바꿔줘
 
 
 @bot.command()
-async def 역할지급(ctx, member: discord.Member, gender: str, birth_year: str, path: str):
+async def 역할지급(ctx, member: discord.Member, gender: str, birth_year_input: str, path: str):
     valid_genders = ["여자", "남자"]
 
-    # 생년 숫자로 변환
+    # 입력받은 생년을 처리 (두 자리 or 네 자리)
     try:
-        birth_year = int(birth_year)
-        if birth_year >= 100:
-            birth_year = birth_year % 100  # 2000년대생 처리
-        birth_year_full = 2000 + birth_year if birth_year < 100 else birth_year
+        if len(birth_year_input) == 2:
+            birth_year_full = 2000 + int(birth_year_input)
+        elif len(birth_year_input) == 4:
+            birth_year_full = int(birth_year_input)
+        else:
+            await ctx.send("❗생년은 '08' 또는 '2008' 형식으로 입력해주세요.")
+            return
     except ValueError:
-        await ctx.send("❗생년은 숫자(예: 08, 06)로 입력해주세요.")
+        await ctx.send("❗생년은 숫자로 입력해주세요.")
         return
 
-    # 현재 연도에서 생년 빼기 → 나이 계산
-    current_year = datetime.now().year
-    age = current_year - birth_year_full
-
-    # 나이 기반 그룹 지정
-    if 10 <= age <= 19:
-        age_group = "10대"
-    elif 20 <= age <= 29:
+    # ✅ 기준: 2006년생 이하 = 20대, 2007년생 이상 = 10대
+    if birth_year_full <= 2006:
         age_group = "20대"
     else:
-        await ctx.send(f"⚠️ `{age}세`는 10대/20대 범위가 아니에요.")
+        age_group = "10대"
+
+    # 성별 검증
+    if gender not in valid_genders:
+        await ctx.send("❗성별은 '남자' 또는 '여자'로 입력해주세요.")
         return
 
     gender_role = ctx.guild.get_role(ROLE_IDS.get(gender))
     age_role = ctx.guild.get_role(ROLE_IDS.get(age_group))
     default_roles = [ctx.guild.get_role(rid) for rid in DEFAULT_ROLE_IDS]
-
     all_roles = [r for r in [gender_role, age_role] + default_roles if r]
 
     if not gender_role or not age_role:
-        await ctx.send("❗역할을 찾을 수 없습니다. ROLE_IDS 값을 확인해주세요.")
+        await ctx.send("❗역할 정보를 찾을 수 없습니다. ROLE_IDS를 확인해주세요.")
         return
 
     try:
@@ -130,7 +130,7 @@ async def 역할지급(ctx, member: discord.Member, gender: str, birth_year: str
         role_names = ', '.join(role.name for role in all_roles)
         await ctx.send(f"✅ {member.mention}님에게 `{role_names}` 역할이 지급되었어요!")
 
-        # 로그 전송
+        # 로그 채널 전송
         log_channel = bot.get_channel(LOG_CHANNEL_ID)
         if log_channel:
             await log_channel.send(
@@ -147,6 +147,7 @@ async def 역할지급(ctx, member: discord.Member, gender: str, birth_year: str
         await ctx.send("🚫 역할을 부여할 권한이 없어요.")
     except discord.HTTPException as e:
         await ctx.send(f"⚠️ 역할 지급 중 오류가 발생했어요: `{e}`")
+
 
 
 @역할지급.error
