@@ -134,7 +134,6 @@ async def 역할지급(ctx, member: discord.Member, gender: str, birth_year_inpu
         if log_channel:
             embed = discord.Embed(
                 title=" 역할지급 기록",
-                description="역할이 정상적으로 지급되었습니다!",
                 color=0x87CEFA
             )
             embed.add_field(name="<:4_:1381626699887808532> 대상", value=member.mention, inline=False)
